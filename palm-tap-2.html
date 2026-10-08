@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Palm Tap by Prompt Girlie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000;
+  --surface:#15101e;
+  --line:#2f2444;
+  --purple:#8a3dff;
+  --purple-deep:#5a1fd1;
+  --lilac:#e4d4ff;
+  --white:#fff;
+  --muted:#a99bc4;
+  --display:'Unbounded','Arial Black','Segoe UI',system-ui,sans-serif;
+  --body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--black);color:var(--white);font-family:var(--body);-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;min-height:100dvh;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;min-height:100dvh;display:flex;flex-direction:column;padding:20px 20px calc(24px + env(safe-area-inset-bottom))}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit;background:none}
+:focus-visible{outline:3px solid var(--lilac);outline-offset:3px}
+
+/* Intro */
+.intro{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-top:36px}
+.wordmark{font-family:var(--display);font-weight:800;font-size:clamp(44px,15vw,64px);line-height:.95;letter-spacing:-.03em}
+.wordmark span{color:var(--purple)}
+.tagline{margin-top:18px;font-size:19px;line-height:1.35;color:var(--lilac);max-width:20em}
+.orb-wrap{position:relative;align-self:center;width:220px;height:220px;margin:36px 0;display:flex;align-items:center;justify-content:center}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--purple);opacity:0;animation:ripple 2.4s ease-out 2}
+.ring:nth-child(2){animation-delay:.6s}
+.ring:nth-child(3){animation-delay:1.2s}
+@keyframes ripple{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.55);opacity:0}}
+.orb{position:relative;width:180px;height:180px;border-radius:50%;background:var(--purple);color:var(--white);font-family:var(--display);font-weight:800;font-size:26px;transition:transform .15s}
+.orb:active{transform:scale(.94)}
+.fine{font-size:15px;line-height:1.45;color:var(--muted);text-align:center;max-width:22em;margin:0 auto}
+
+/* Top bar */
+.top{display:flex;align-items:center;gap:14px;padding:8px 0 28px}
+.back{font-size:16px;font-weight:700;color:var(--lilac);padding:10px 12px 10px 0;min-height:44px}
+.back[hidden]{visibility:hidden}
+.bar{flex:1;display:flex;gap:5px}
+.seg{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.seg.on{background:var(--purple)}
+
+/* Question */
+.q{flex:1;display:flex;flex-direction:column}
+.q h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,7.4vw,30px);line-height:1.18;letter-spacing:-.02em;outline:none}
+.hint{margin-top:10px;font-size:16px;color:var(--muted);line-height:1.4}
+.opts{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+.opts.wrap{flex-direction:row;flex-wrap:wrap}
+.chip{min-height:56px;padding:14px 18px;border-radius:18px;border:2px solid var(--line);font-size:17px;font-weight:500;text-align:left;transition:background .12s,border-color .12s}
+.opts.wrap .chip{min-height:50px;border-radius:999px;padding:12px 18px}
+.chip[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);font-weight:700}
+.field{margin-top:26px;width:100%;min-height:60px;padding:16px 18px;border-radius:18px;border:2px solid var(--line);background:var(--surface);color:var(--white);font-family:var(--body);font-size:18px}
+.field::placeholder{color:#7d6f99}
+.field:focus{border-color:var(--purple);outline:none}
+.field.small{margin-top:12px;min-height:52px;font-size:16px}
+.spacer{flex:1;min-height:24px}
+.next{width:100%;min-height:60px;border-radius:999px;background:var(--lilac);color:var(--black);font-size:18px;font-weight:700;margin-top:20px}
+.next:disabled{background:var(--line);color:#7d6f99;cursor:not-allowed}
+
+/* Result */
+.result h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,9vw,36px);line-height:1.08;letter-spacing:-.03em;margin-top:8px}
+.result .sub{margin-top:12px;font-size:17px;line-height:1.45;color:var(--lilac)}
+.profile{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--purple);border-radius:18px;padding:18px;font-size:15px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.copy{width:100%;min-height:60px;border-radius:999px;background:var(--purple);font-size:18px;font-weight:700;margin-top:16px}
+.copy.done{background:var(--lilac);color:var(--black)}
+details{margin-top:12px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+summary{list-style:none;padding:18px;font-weight:700;font-size:17px;cursor:pointer;min-height:56px;display:flex;align-items:center;justify-content:space-between}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:24px;color:var(--purple);font-weight:500}
+details[open] summary::after{content:"\2212"}
+.inner{padding:0 18px 18px;font-size:16px;line-height:1.5}
+.inner h3{font-size:16px;margin-top:16px;color:var(--lilac)}
+.inner h3:first-child{margin-top:0}
+.inner p{margin-top:6px;color:#e6dff2}
+.note{margin-top:14px;font-size:14px;color:var(--muted);line-height:1.45}
+.ba{margin-top:6px;padding:14px;border-radius:14px;font-size:15px;line-height:1.5}
+.ba.before{background:#1d1a24;color:#b9b0c9}
+.ba.after{background:var(--purple-deep);color:var(--white)}
+.ba b{display:block;margin-bottom:4px;font-size:14px}
+.again{width:100%;min-height:52px;margin-top:22px;font-size:16px;font-weight:700;color:var(--lilac);text-decoration:underline;text-underline-offset:4px}
+.foot{margin-top:18px;text-align:center;font-size:14px;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){.ring{animation:none}.chip,.orb{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const QUESTIONS = [
+  {id:'name', type:'text', q:"What should AI call you?", hint:"Your first name or a nickname.", ph:"e.g. Ada", required:true},
+  {id:'role', type:'single', q:"What best describes you?", custom:"Or type your own", required:true,
+    opts:[{l:"Student"},{l:"Employee"},{l:"Business owner"},{l:"Freelancer"},{l:"Job seeker"},{l:"Content creator"}]},
+  {id:'uses', type:'multi', q:"What do you use AI for most?", hint:"Pick all that apply.", required:true,
+    opts:[{l:"Work or school"},{l:"Writing"},{l:"Money and budgeting"},{l:"Planning my life"},{l:"Business ideas"},{l:"Learning new things"}]},
+  {id:'goal', type:'text', q:"What's one big thing you're working toward right now?", hint:"A few words is enough.", ph:"e.g. launch my side business", required:true},
+  {id:'tone', type:'single', q:"How should AI sound when it talks to you?", required:true,
+    opts:[
+      {l:"Direct and blunt", t:"Direct and honest. Skip the sugarcoating."},
+      {l:"Warm and friendly", t:"Warm and encouraging, like a smart friend."},
+      {l:"Professional", t:"Professional and polished."},
+      {l:"Simple and plain", t:"Plain and simple, no jargon."}]},
+  {id:'format', type:'single', q:"How do you like answers laid out?", required:true,
+    opts:[
+      {l:"Short and to the point", t:"Keep answers short and to the point."},
+      {l:"Step by step", t:"Give step-by-step answers I can act on."},
+      {l:"Detailed", t:"Go into detail and explain your reasoning."},
+      {l:"Bullet points", t:"Use bullet points and clear headings."}]},
+  {id:'avoid', type:'multi', q:"What annoys you about AI answers?", hint:"Pick any, or skip.", optional:true,
+    opts:[
+      {l:"Long intros", t:"long intros"},
+      {l:"Generic advice", t:"generic advice"},
+      {l:"Too many disclaimers", t:"unnecessary disclaimers"},
+      {l:"Repeating my question", t:"repeating my question back to me"},
+      {l:"Jargon", t:"jargon"},
+      {l:"Emojis", t:"emojis"}]},
+  {id:'place', type:'text', q:"Where are you based?", hint:"So advice fits your location and currency.", ph:"e.g. Lagos, Nigeria", optional:true}
+];
+
+const app = document.getElementById('app');
+let step = -1;              // -1 intro, 0..n-1 questions, n result
+const ans = {};             // answers by id
+const N = QUESTIONS.length;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const list = a => a.length < 2 ? (a[0]||'') : a.slice(0,-1).join(', ') + ' and ' + a[a.length-1];
+const article = w => /^[aeiou]/i.test(w) ? 'an' : 'a';
+
+function answered(q){
+  const v = ans[q.id];
+  if(q.type === 'multi') return Array.isArray(v) && v.length > 0;
+  return typeof v === 'string' && v.trim().length > 0;
+}
+const canNext = q => q.optional || answered(q);
+
+function topBar(){
+  let segs = '';
+  for(let i=0;i<N;i++) segs += `<div class="seg ${i<=step?'on':''}"></div>`;
+  return `<div class="top"><button class="back" id="back">Back</button><div class="bar" aria-hidden="true">${segs}</div></div>`;
+}
+
+function renderIntro(){
+  app.innerHTML = `
+  <div class="intro">
+    <div>
+      <h1 class="wordmark">Palm<br><span>Tap</span></h1>
+      <p class="tagline">Tap once. Make AI know you.</p>
+    </div>
+    <div class="orb-wrap">
+      <span class="ring"></span><span class="ring"></span><span class="ring"></span>
+      <button class="orb" id="start" aria-label="Start Palm Tap">Start</button>
+    </div>
+    <div>
+      <p class="fine">Answer 8 quick questions and get one personal profile that works in ChatGPT, Claude and Gemini.</p>
+      <p class="foot">by Prompt Girlie</p>
+    </div>
+  </div>`;
+  document.getElementById('start').onclick = () => { step = 0; render(); };
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[step];
+  let body = '';
+  if(q.type === 'text'){
+    body = `<input class="field" id="txt" type="text" autocomplete="off" placeholder="${esc(q.ph||'')}" value="${esc(ans[q.id]||'')}" aria-label="${esc(q.q)}">`;
+  } else {
+    const sel = ans[q.id];
+    const wrap = q.type === 'multi' ? 'wrap' : '';
+    body = `<div class="opts ${wrap}" role="group" aria-label="${esc(q.q)}">` +
+      q.opts.map((o,i) => {
+        const on = q.type === 'multi' ? (sel||[]).includes(o.l) : sel === o.l;
+        return `<button class="chip" data-i="${i}" aria-pressed="${on}">${esc(o.l)}</button>`;
+      }).join('') + `</div>`;
+    if(q.custom){
+      const isCustom = typeof sel === 'string' && !q.opts.some(o => o.l === sel);
+      body += `<input class="field small" id="custom" type="text" autocomplete="off" placeholder="${esc(q.custom)}" value="${isCustom ? esc(sel) : ''}" aria-label="${esc(q.custom)}">`;
+    }
+  }
+  const last = step === N-1;
+  const skipLabel = q.optional && !answered(q) ? 'Skip' : (last ? 'Build my profile' : 'Next');
+  app.innerHTML = `
+    ${topBar()}
+    <div class="q">
+      <h2 id="qh" tabindex="-1">${esc(q.q)}</h2>
+      ${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}
+      ${body}
+      <div class="spacer"></div>
+      <button class="next" id="next" ${canNext(q)?'':'disabled'}>${last && answered(q) ? 'Build my profile' : (last ? 'Build my profile' : skipLabel)}</button>
+    </div>`;
+
+  const next = document.getElementById('next');
+  const refreshNext = () => {
+    next.disabled = !canNext(q);
+    if(!last) next.textContent = (q.optional && !answered(q)) ? 'Skip' : 'Next';
+  };
+  document.getElementById('back').onclick = () => { step = step === 0 ? -1 : step-1; render(); };
+  next.onclick = () => { if(!next.disabled){ step++; render(); } };
+
+  if(q.type === 'text'){
+    const inp = document.getElementById('txt');
+    inp.oninput = () => { ans[q.id] = inp.value; refreshNext(); };
+    inp.onkeydown = e => { if(e.key === 'Enter' && !next.disabled){ step++; render(); } };
+    inp.focus();
+  } else {
+    document.querySelectorAll('.chip').forEach(btn => {
+      btn.onclick = () => {
+        const o = q.opts[+btn.dataset.i];
+        if(q.type === 'multi'){
+          const cur = ans[q.id] || [];
+          ans[q.id] = cur.includes(o.l) ? cur.filter(x => x !== o.l) : [...cur, o.l];
+        } else {
+          ans[q.id] = o.l;
+        }
+        render(true);
+      };
+    });
+    const c = document.getElementById('custom');
+    if(c){
+      c.oninput = () => {
+        ans[q.id] = c.value;
+        document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', 'false'));
+        refreshNext();
+      };
+    }
+    if(!arguments_keepFocus) document.getElementById('qh').focus();
+  }
+}
+let arguments_keepFocus = false;
+
+function buildProfile(){
+  const g = id => (ans[id]||'').toString().trim();
+  const find = (id, label) => (QUESTIONS.find(q => q.id === id).opts.find(o => o.l === label)||{}).t;
+  const name = g('name') || 'there';
+  const role = g('role').toLowerCase();
+  const place = g('place');
+  const uses = (ans.uses||[]).map(u => u.toLowerCase());
+  const goal = g('goal');
+  const avoid = (ans.avoid||[]).map(a => find('avoid', a));
+
+  let about = [`My name is ${name}.`];
+  if(role) about.push(`I'm ${article(role)} ${role}${place ? ' based in ' + place : ''}.`);
+  else if(place) about.push(`I'm based in ${place}.`);
+  if(uses.length) about.push(`I mostly use AI for ${list(uses)}.`);
+  if(goal) about.push(`My main goal right now: ${goal}.`);
+
+  let how = [];
+  const tone = find('tone', ans.tone), fmt = find('format', ans.format);
+  if(tone) how.push(`Tone: ${tone}`);
+  if(fmt) how.push(fmt);
+  if(avoid.length) how.push(`Avoid: ${list(avoid)}.`);
+
+  let always = [
+    `Tailor your answers to my situation${place ? ', location and currency' : ''}. No generic advice.`,
+    `If my request is vague, ask me up to 2 quick questions before answering.`,
+    `If you're not sure about something, say so instead of guessing.`
+  ];
+
+  return `ABOUT ME\n${about.map(x => '- ' + x).join('\n')}\n\nHOW TO ANSWER\n${how.map(x => '- ' + x).join('\n')}\n\nALWAYS\n${always.map(x => '- ' + x).join('\n')}`;
+}
+
+function beforeAfter(){
+  const name = (ans.name||'').trim() || 'Friend';
+  const role = (ans.role||'').trim().toLowerCase();
+  const place = (ans.place||'').trim();
+  const goal = (ans.goal||'').trim();
+  let who = role ? `You're ${article(role)} ${role}${place ? ' in ' + place : ''}` : (place ? `You're based in ${place}` : `Based on what I know about you`);
+  const after = `${name}, straight answer: don't quit yet. ${who}${goal ? ', and your goal is to ' + goal.replace(/^(to\s+)/i,'') : ''}. Start it on the side for 3 months, build a savings buffer that covers your monthly costs, and quit once it earns steady income. Want me to map out your first 30 days?`;
+  return {
+    before: "Deciding whether to quit your job is a big decision with many factors to consider, such as finances, risk tolerance, and market conditions. Here are some general tips to help you decide...",
+    after
+  };
+}
+
+function renderResult(){
+  const profile = buildProfile();
+  const ba = beforeAfter();
+  app.innerHTML = `
+  <div class="result">
+    <div class="top"><button class="back" id="back">Back</button><div class="bar" aria-hidden="true">${QUESTIONS.map(()=>'<div class="seg on"></div>').join('')}</div></div>
+    <h1 id="qh" tabindex="-1" style="outline:none">Your AI profile is ready</h1>
+    <p class="sub">Copy it, then paste it into your AI tool once. Every answer gets more personal from there.</p>
+    <div class="profile" id="profile">${esc(profile)}</div>
+    <button class="copy" id="copy">Copy my profile</button>
+
+    <details>
+      <summary>Where do I paste it?</summary>
+      <div class="inner">
+        <h3>ChatGPT</h3>
+        <p>Open Settings, go to Personalization, and find Custom instructions. Paste your profile into the box and save.</p>
+        <h3>Claude</h3>
+        <p>Open Settings, go to Profile, and find the personal preferences box. Paste your profile and save. You can also paste it into the instructions of a Project.</p>
+        <h3>Gemini</h3>
+        <p>Open Settings and look for Instructions for Gemini (or Saved info). Add your profile there and save.</p>
+        <p class="note">App menus change from time to time. If you can't find the exact name, look for Personalization, Custom instructions or Preferences.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>See the difference</summary>
+      <div class="inner">
+        <p>Same question: "Should I quit my job to start a business?"</p>
+        <h3>Without your profile</h3>
+        <div class="ba before">${esc(ba.before)}</div>
+        <h3>With your profile</h3>
+        <div class="ba after">${esc(ba.after)}</div>
+        <p class="note">This is an example of the kind of difference you'll see. Real answers vary by tool.</p>
+      </div>
+    </details>
+
+    <button class="again" id="again">Start over</button>
+    <p class="foot">Made by Prompt Girlie</p>
+  </div>`;
+  document.getElementById('back').onclick = () => { step = N-1; render(); };
+  document.getElementById('again').onclick = () => { Object.keys(ans).forEach(k => delete ans[k]); step = -1; render(); };
+  const btn = document.getElementById('copy');
+  btn.onclick = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(profile); ok = true; }
+    catch(e){
+      const ta = document.createElement('textarea');
+      ta.value = profile; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand('copy'); } catch(_){}
+      document.body.removeChild(ta);
+    }
+    btn.textContent = ok ? 'Copied. Now paste it in your AI tool' : 'Press and hold the text above to copy it';
+    btn.classList.toggle('done', ok);
+    if(ok) setTimeout(() => { btn.textContent = 'Copy my profile'; btn.classList.remove('done'); }, 3500);
+  };
+  document.getElementById('qh').focus();
+  window.scrollTo(0,0);
+}
+
+function render(keepFocus){
+  arguments_keepFocus = !!keepFocus;
+  if(step === -1) renderIntro();
+  else if(step < N) renderQuestion();
+  else renderResult();
+  if(!keepFocus) window.scrollTo(0,0);
+  arguments_keepFocus = false;
+}
+render();
+</script>
+</body>
+</html>
